@@ -1,0 +1,428 @@
+:root {
+  color-scheme: dark;
+  --desk-bg: #111317;
+  --shell-bg: #262522;
+  --shell-hi: #3a3731;
+  --shell-border: #4a463d;
+  --bezel-bg: #121210;
+  --ink: #ebe7dc;
+  --ink-muted: #a6a090;
+  --btn-bg: #32302b;
+  --btn-hover: #423f38;
+  --btn-active: #14a5ff;
+  --btn-active-ink: #071018;
+  --crt-glow: rgba(20, 165, 255, 0.22);
+  --accent: #14f53c;
+  --danger: #e05252;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+}
+
+body[data-monitor="green"] {
+  --crt-glow: rgba(51, 255, 102, 0.24);
+  --btn-active: #33ff66;
+  --accent: #33ff66;
+}
+
+body[data-monitor="amber"] {
+  --crt-glow: rgba(255, 176, 0, 0.24);
+  --btn-active: #ffb000;
+  --accent: #ffb000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: radial-gradient(circle at 50% 20%, #1d2026 0%, var(--desk-bg) 70%);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  line-height: 1.45;
+}
+
+.desk {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 12px;
+}
+
+/* Apple IIe Monitor Housing */
+.monitor-shell {
+  width: min(940px, 100%);
+  background: linear-gradient(180deg, var(--shell-hi) 0%, var(--shell-bg) 14%, #1e1d1a 100%);
+  border: 2px solid var(--shell-border);
+  border-radius: 16px;
+  padding: 14px 16px 16px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.monitor-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.apple-badge {
+  display: flex;
+  flex-direction: column;
+  width: 22px;
+  height: 18px;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.stripe {
+  flex: 1;
+}
+.s1 { background: #61bb46; }
+.s2 { background: #fdb827; }
+.s3 { background: #f5821f; }
+.s4 { background: #e03a3e; }
+.s5 { background: #963d97; }
+.s6 { background: #009ddc; }
+
+.monitor-title {
+  margin: 0;
+  font-size: clamp(0.85rem, 1.8vw, 1.05rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 700;
+  flex: 1;
+}
+
+.power-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.power-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+}
+
+.power-led {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .power-led {
+    animation: ledPulse 3.6s ease-in-out infinite;
+  }
+}
+
+@keyframes ledPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.72; }
+}
+
+/* Recessed CRT Bezel */
+.crt-bezel {
+  background: var(--bezel-bg);
+  border-radius: 12px;
+  padding: clamp(8px, 1.6vw, 16px);
+  border: 2px solid #090908;
+  box-shadow:
+    inset 0 8px 22px rgba(0, 0, 0, 0.9),
+    0 0 36px var(--crt-glow);
+}
+
+.crt-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 280 / 192;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: crosshair;
+  outline: none;
+}
+
+#gameCanvas:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.26) 2px,
+    rgba(0, 0, 0, 0.26) 4px
+  );
+  opacity: 0.78;
+}
+
+.crt-screen[data-scanlines="off"] .crt-scanlines {
+  display: none;
+}
+
+.crt-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 64%,
+    rgba(0, 0, 0, 0.42) 100%
+  );
+}
+
+/* Tactile Control Deck */
+.control-deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.deck-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.deck-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  margin-right: 2px;
+}
+
+.deck-btn {
+  appearance: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #555046;
+  background: var(--btn-bg);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.deck-btn:hover {
+  background: var(--btn-hover);
+  border-color: #777163;
+}
+
+.deck-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.deck-btn[aria-pressed="true"] {
+  background: var(--btn-active);
+  color: var(--btn-active-ink);
+  border-color: var(--btn-active);
+}
+
+.deck-btn.accent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.deck-btn.accent:hover {
+  background: var(--accent);
+  color: #061209;
+}
+
+.deck-btn.danger {
+  border-color: var(--danger);
+  color: #ff9a9a;
+}
+
+.deck-btn.danger:hover {
+  background: var(--danger);
+  color: #160404;
+}
+
+/* Quick Reference Strip */
+.quick-strip {
+  width: min(940px, 100%);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.quick-strip p {
+  margin: 0;
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid #545047;
+  background: #23221f;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+
+/* Native Modal Dialogs (Modern Web Guidance compliant) */
+dialog {
+  max-width: min(680px, calc(100vw - 32px));
+  width: 100%;
+  max-height: calc(100dvh - 40px);
+  padding: 0;
+  border: 2px solid var(--shell-border);
+  border-radius: 12px;
+  background: #1a1916;
+  color: var(--ink);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8);
+}
+
+dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  background: rgba(5, 7, 10, 0.72);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.dialog-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #23211d;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 0.96rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.dialog-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+  font-size: 0.86rem;
+}
+
+.manual-lead {
+  margin-top: 0;
+}
+
+.manual-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.manual-card {
+  background: #23211d;
+  border: 1px solid #3c3932;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.manual-card h3,
+.dialog-body h3 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--btn-active);
+}
+
+.manual-card ul,
+.tactics-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.manual-card li,
+.tactics-list li {
+  margin-bottom: 6px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.option-row:last-child {
+  border-bottom: none;
+}
+
+.option-desc {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #23211d;
+}
+
+@media (max-width: 640px) {
+  .desk {
+    padding: 8px;
+  }
+  .monitor-shell {
+    padding: 10px;
+  }
+  .control-deck {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Castle Wolfenstein — Apple IIe Web Edition</title>
+  <meta name="description" content="A faithful browser remake of Silas Warner's 1981 Apple IIe classic Castle Wolfenstein, built as a zero-build static HTML5 web app.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-monitor="color">
+  <main class="desk">
+    <section class="monitor-shell" aria-label="Apple IIe CRT Monitor">
+      <header class="monitor-top">
+        <div class="apple-badge" aria-hidden="true">
+          <span class="stripe s1"></span>
+          <span class="stripe s2"></span>
+          <span class="stripe s3"></span>
+          <span class="stripe s4"></span>
+          <span class="stripe s5"></span>
+          <span class="stripe s6"></span>
+        </div>
+        <h1 class="monitor-title">Apple //e &middot; Castle Wolfenstein</h1>
+        <div class="power-group">
+          <span class="power-label">PWR</span>
+          <span class="power-led" aria-hidden="true"></span>
+        </div>
+      </header>
+
+      <div class="crt-bezel">
+        <div class="crt-screen" id="crtScreen" data-scanlines="on">
+          <canvas
+            id="gameCanvas"
+            width="280"
+            height="192"
+            tabindex="0"
+            aria-label="Castle Wolfenstein Apple IIe game screen"
+          ></canvas>
+          <div class="crt-scanlines" aria-hidden="true"></div>
+          <div class="crt-vignette" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <footer class="control-deck" aria-label="Monitor and game controls">
+        <div class="deck-group" role="group" aria-label="Monitor display mode">
+          <span class="deck-label">CRT</span>
+          <button type="button" class="deck-btn" data-monitor-btn="color" aria-pressed="true">Color</button>
+          <button type="button" class="deck-btn" data-monitor-btn="green" aria-pressed="false">Green</button>
+          <button type="button" class="deck-btn" data-monitor-btn="amber" aria-pressed="false">Amber</button>
+          <button type="button" class="deck-btn" id="scanlinesBtn" aria-pressed="true">Scanlines</button>
+        </div>
+
+        <div class="deck-group" role="group" aria-label="Input and audio settings">
+          <span class="deck-label">CTRL</span>
+          <button type="button" class="deck-btn" id="controlModeBtn">Modern</button>
+          <button type="button" class="deck-btn" id="sfxBtn" aria-pressed="true">SFX</button>
+          <button type="button" class="deck-btn" id="voiceBtn" aria-pressed="true">Voice</button>
+        </div>
+
+        <div class="deck-group" role="group" aria-label="Game actions">
+          <button type="button" class="deck-btn" id="mapBtn">Map [M]</button>
+          <button type="button" class="deck-btn" id="manualBtn">Field Manual</button>
+          <button type="button" class="deck-btn" id="optionsBtn">Options</button>
+          <button type="button" class="deck-btn accent" id="newGameBtn">New Castle</button>
+        </div>
+      </footer>
+    </section>
+
+    <aside class="quick-strip" aria-label="Quick controls summary">
+      <p id="quickControlsText">
+        <strong>Modern:</strong> <kbd>WASD</kbd> Move &middot; <kbd>Mouse</kbd>/<kbd>Arrows</kbd> Aim &middot;
+        <kbd>Click</kbd>/<kbd>Space</kbd> Shoot &middot; <kbd>E</kbd> Search/Frisk/Unlock &middot;
+        <kbd>R</kbd> Holster (Disguise) &middot; <kbd>G</kbd>/<kbd>R-Click</kbd> Grenade &middot; <kbd>M</kbd> Map
+      </p>
+    </aside>
+  </main>
+
+  <!-- Native Modal Dialog: Field Manual & Controls -->
+  <dialog id="manualDialog" closedby="any" aria-labelledby="manualTitle">
+    <div class="dialog-header">
+      <h2 id="manualTitle">FIELD MANUAL — CASTLE WOLFENSTEIN (1981)</h2>
+    </div>
+    <div class="dialog-body">
+      <p class="manual-lead">
+        You are an Allied prisoner escaping from the 3-floor fortress of Castle Wolfenstein.
+        Locate the <strong>Secret War Plans</strong> in the <strong>Floor 3 War Room Vault</strong>,
+        then fight or sneak your way out through the <strong>Floor 3 Castle Exit Gate</strong>.
+      </p>
+
+      <div class="manual-grid">
+        <div class="manual-card">
+          <h3>Modern Controls</h3>
+          <ul>
+            <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> — Move in 8 directions</li>
+            <li><kbd>Mouse</kbd> or <kbd>Arrows</kbd> — Aim pistol</li>
+            <li><kbd>Left Click</kbd> or <kbd>Space</kbd> — Fire pistol</li>
+            <li><kbd>Right Click</kbd> or <kbd>G</kbd> — Throw grenade</li>
+            <li><kbd>E</kbd> or <kbd>F</kbd> — Open chest / Frisk / Search / Unlock</li>
+            <li><kbd>R</kbd> — Holster or draw pistol</li>
+            <li><kbd>M</kbd> — Toggle Floor Map</li>
+          </ul>
+        </div>
+
+        <div class="manual-card">
+          <h3>Classic Apple IIe Controls</h3>
+          <ul>
+            <li><kbd>Q</kbd><kbd>W</kbd><kbd>E</kbd> / <kbd>A</kbd><kbd>D</kbd> / <kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd> — 8-way move (<kbd>S</kbd> stop)</li>
+            <li><kbd>I</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd> or <kbd>Arrows</kbd> — Aim pistol</li>
+            <li><kbd>Space</kbd> — Fire pistol</li>
+            <li><kbd>T</kbd> — Throw grenade</li>
+            <li><kbd>U</kbd> — Use / Open chest / Frisk / Unlock</li>
+            <li><kbd>H</kbd> — Holster or draw pistol</li>
+            <li><kbd>M</kbd> — Toggle Floor Map</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Classic Survival Tactics</h3>
+      <ul class="tactics-list">
+        <li><strong>Hold Up Guards:</strong> Sneak close behind or beside an unalerted regular guard and aim your pistol at them. They raise their hands and shout <em>&ldquo;NEIN!&rdquo;</em> — walk up and press <kbd>E</kbd>/<kbd>U</kbd> to frisk them for bullets, grenades, or keys! (Even an empty gun works as a bluff!)</li>
+        <li><strong>Disguise &amp; Holster:</strong> Find a <strong>Guard Uniform</strong> and press <kbd>R</kbd>/<kbd>H</kbd> to holster your gun. Regular guards let you walk right past unless you open chests in front of them or bump into them.</li>
+        <li><strong>Beware SS Stormtroopers:</strong> Violet/armored SS guards <em>always</em> see through uniforms, wear bulletproof vests (3+ pistol shots or 1 grenade), and will chase you into adjacent rooms!</li>
+        <li><strong>Locked Doors:</strong> Open with a <strong>Brass Key</strong> (instant), pick the lock with <kbd>E</kbd>/<kbd>U</kbd> (takes ~2.5s), or blow the door apart with a <strong>Grenade</strong>.</li>
+        <li><strong>Chests:</strong> Hold still while cracking a chest open to discover Ammo, Grenades, Uniforms, Bulletproof Vests, Bratwurst (+1 HP), Schnapps (wobbly aim!), or the <strong>Secret War Plans</strong>.</li>
+      </ul>
+    </div>
+    <form method="dialog" class="dialog-footer">
+      <button type="submit" value="close" class="deck-btn accent" autofocus>Return to Castle</button>
+    </form>
+  </dialog>
+
+  <!-- Native Modal Dialog: Game Options -->
+  <dialog id="optionsDialog" closedby="any" aria-labelledby="optionsTitle">
+    <div class="dialog-header">
+      <h2 id="optionsTitle">APPLE //e SYSTEM OPTIONS</h2>
+    </div>
+    <div class="dialog-body">
+      <div class="option-row">
+        <div>
+          <strong>Classic 1-Hit Hardcore Mode</strong>
+          <p class="option-desc">Authentic 1981 lethality: 1 unarmored hit kills you (Vest still protects).</p>
+        </div>
+        <button type="button" class="deck-btn" id="hardcoreBtn" aria-pressed="false">Standard (3 HP)</button>
+      </div>
+
+      <div class="option-row">
+        <div>
+          <strong>Current Rank &amp; High Score</strong>
+          <p class="option-desc" id="rankSummary">Rank: PRIVATE &middot; High Score: 0</p>
+        </div>
+        <button type="button" class="deck-btn danger" id="resetProgressBtn">Reset Rank</button>
+      </div>
+    </div>
+    <form method="dialog" class="dialog-footer">
+      <button type="submit" value="close" class="deck-btn accent" autofocus>Close</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
